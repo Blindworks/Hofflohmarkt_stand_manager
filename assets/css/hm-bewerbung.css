@@ -1,0 +1,173 @@
+/* Modal Styles */
+.hm-modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.hm-modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 30px;
+    border: 1px solid #888;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.hm-modal-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 20px;
+}
+
+.hm-modal-close:hover,
+.hm-modal-close:focus {
+    color: #000;
+}
+
+.hm-modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Form Styles */
+.hm-form-group {
+    margin-bottom: 15px;
+}
+
+.hm-form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+}
+
+.hm-form-group input[type="text"],
+.hm-form-group input[type="email"],
+.hm-form-group input[type="tel"],
+.hm-form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.hm-form-group input:focus,
+.hm-form-group textarea:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+}
+
+.hm-form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Form Actions */
+.hm-form-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.hm-btn-primary,
+.hm-btn-secondary {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hm-btn-primary {
+    background-color: #4CAF50;
+    color: white;
+    flex: 1;
+}
+
+.hm-btn-primary:hover {
+    background-color: #45a049;
+}
+
+.hm-btn-secondary {
+    background-color: #f1f1f1;
+    color: #333;
+}
+
+.hm-btn-secondary:hover {
+    background-color: #ddd;
+}
+
+/* Message Styles */
+.hm-message {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 4px;
+    display: none;
+}
+
+.hm-message:not(:empty) {
+    display: block;
+}
+
+.hm-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.hm-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Bewerbung Button in Popup */
+.hm-bewerbung-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #2196F3;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.hm-bewerbung-btn:hover {
+    background-color: #0b7dda;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .hm-modal-content {
+        width: 95%;
+        margin: 10% auto;
+        padding: 20px;
+    }
+    
+    .hm-form-actions {
+        flex-direction: column;
+    }
+}

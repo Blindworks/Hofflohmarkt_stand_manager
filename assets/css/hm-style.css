@@ -1,0 +1,35 @@
+/* Hofflohmarkt Stand Manager Styles */
+
+.hm-registration-form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.hm-form-group {
+    margin-bottom: 15px;
+}
+
+.hm-form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.hm-form-group input[type="text"],
+.hm-form-group input[type="email"],
+.hm-form-group textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.hm-map-container {
+    height: 500px;
+    width: 100%;
+    border: 1px solid #ccc;
+}
