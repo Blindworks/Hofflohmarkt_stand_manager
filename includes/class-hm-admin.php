@@ -433,7 +433,8 @@ class HM_Admin {
 
         if ($action == 'delete' && $id > 0 && check_admin_referer('hm_delete_space_offer_' . $id)) {
             $wpdb->delete($table_space_offers, array('id' => $id));
-            echo '<div class="updated"><p>Platzangebot gelöscht.</p></div>';
+            wp_redirect(admin_url('admin.php?page=hm_space_offers&msg=deleted'));
+            exit;
         } elseif ($action == 'toggle_active' && $id > 0 && check_admin_referer('hm_toggle_active_space_' . $id)) {
             $current_status = $wpdb->get_var($wpdb->prepare("SELECT active FROM $table_space_offers WHERE id = %d", $id));
             $new_status = $current_status ? 0 : 1;
@@ -444,8 +445,9 @@ class HM_Admin {
                 $offer = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_space_offers WHERE id = %d", $id));
                 $this->send_activation_email($offer->email, $offer->vorname . ' ' . $offer->nachname);
             }
-            
-            echo '<div class="updated"><p>Status aktualisiert.</p></div>';
+
+            wp_redirect(admin_url('admin.php?page=hm_space_offers&msg=status_updated'));
+            exit;
         } elseif (($action == 'accept_application' || $action == 'reject_application') && isset($_GET['bewerbung_id'])) {
             $bewerbung_id = intval($_GET['bewerbung_id']);
             $nonce_action = 'hm_' . $action . '_' . $bewerbung_id;
@@ -471,11 +473,13 @@ class HM_Admin {
                             );
                         }
                         
-                        echo '<div class="updated"><p>Bewerbung angenommen. Verfügbare Plätze wurden aktualisiert.</p></div>';
+                        wp_redirect(admin_url('admin.php?page=hm_space_offers&action=view&id=' . $bewerbung->stand_id . '&msg=bewerbung_accepted'));
+                        exit;
                     } else {
                         // Reject
                         $wpdb->update($table_bewerbungen, array('status' => 'rejected'), array('id' => $bewerbung_id));
-                        echo '<div class="updated"><p>Bewerbung abgelehnt.</p></div>';
+                        wp_redirect(admin_url('admin.php?page=hm_space_offers&action=view&id=' . $bewerbung->stand_id . '&msg=bewerbung_rejected'));
+                        exit;
                     }
                 }
             }
@@ -483,9 +487,18 @@ class HM_Admin {
 
         $items = $wpdb->get_results("SELECT * FROM $table_space_offers ORDER BY created_at DESC");
 
+        $messages = array(
+            'deleted' => 'Platzangebot gelöscht.',
+            'status_updated' => 'Status aktualisiert.',
+        );
+        $msg = isset($_GET['msg']) ? $_GET['msg'] : '';
+
         ?>
         <div class="wrap">
             <h1>Platzangebote</h1>
+            <?php if (isset($messages[$msg])): ?>
+                <div class="updated"><p><?php echo esc_html($messages[$msg]); ?></p></div>
+            <?php endif; ?>
             <table class="wp-list-table widefat fixed striped">
                 <thead>
                     <tr>
@@ -831,9 +844,18 @@ class HM_Admin {
         // Get bewerbungen for this space offer
         $bewerbungen = HM_Bewerbungen::get_bewerbungen_for_stand($id, 'space');
         
+        $detail_messages = array(
+            'bewerbung_accepted' => 'Bewerbung angenommen. Verfügbare Plätze wurden aktualisiert.',
+            'bewerbung_rejected' => 'Bewerbung abgelehnt.',
+        );
+        $msg = isset($_GET['msg']) ? $_GET['msg'] : '';
+
         ?>
         <div class="wrap">
             <h1>Platzangebot: <?php echo esc_html($offer->vorname . ' ' . $offer->nachname); ?></h1>
+            <?php if (isset($detail_messages[$msg])): ?>
+                <div class="updated"><p><?php echo esc_html($detail_messages[$msg]); ?></p></div>
+            <?php endif; ?>
             <a href="<?php echo admin_url('admin.php?page=hm_space_offers'); ?>" class="button">← Zurück zur Übersicht</a>
             
             <div style="margin-top: 20px; background: #fff; padding: 20px; border: 1px solid #ccd0d4; box-shadow: 0 1px 1px rgba(0,0,0,.04);">
