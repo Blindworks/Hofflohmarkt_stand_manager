@@ -97,6 +97,7 @@ class HM_Map
                 'nest' => false,
                 'provides_space' => true,
                 'available_spots' => (int) $row->available_spots,
+                'accepted_count' => (int) HM_Bewerbungen::get_accepted_count($row->id, 'space'),
                 'space_description' => $row->space_description,
                 'categories' => array() // Space offers don't have categories usually
             );

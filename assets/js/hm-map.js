@@ -79,19 +79,26 @@ jQuery(document).ready(function ($) {
 
 
         if (stand.provides_space) {
-            if (stand.available_spots) {
+            var total = stand.available_spots + (stand.accepted_count || 0);
+            if (total > 0) {
                 html += '<div class="hm-popup-spots">';
-                html += '<strong>' + stand.available_spots + '</strong> freie Plätze';
+                if (stand.available_spots > 0) {
+                    html += '<strong>' + stand.available_spots + '</strong> von ' + total + ' Plätzen verfügbar';
+                } else {
+                    html += '<span style="color: #d63638; font-weight: bold;">Alle ' + total + ' Plätze vergeben</span>';
+                }
                 html += '</div>';
             }
             if (stand.space_description) {
                 html += '<div class="hm-popup-detail">' + stand.space_description + '</div>';
             }
 
-            var standIdNum = stand.id.replace('stand_', '').replace('space_', '');
-            var standType = stand.id.startsWith('stand_') ? 'stand' : 'space';
-            html += '<button class="hm-bewerbung-btn" data-stand-id="' + standIdNum +
-                    '" data-stand-type="' + standType + '">Jetzt bewerben</button>';
+            if (stand.available_spots > 0) {
+                var standIdNum = stand.id.replace('stand_', '').replace('space_', '');
+                var standType = stand.id.startsWith('stand_') ? 'stand' : 'space';
+                html += '<button class="hm-bewerbung-btn" data-stand-id="' + standIdNum +
+                        '" data-stand-type="' + standType + '">Jetzt bewerben</button>';
+            }
         }
 
         if (stand.categories && stand.categories.length > 0) {

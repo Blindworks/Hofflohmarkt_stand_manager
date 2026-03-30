@@ -243,6 +243,21 @@ class HM_Bewerbungen
             wp_die('Fehler beim Aktualisieren der Bewerbung.');
         }
 
+        // Decrement available_spots for accepted space offer bewerbungen
+        if ($new_status === 'accepted' && ($bewerbung->stand_type === 'space' || $bewerbung->stand_type === 'space_offer')) {
+            $table_space_offers = $wpdb->prefix . 'hm_space_offers';
+            $space_offer = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_space_offers WHERE id = %d", $bewerbung->stand_id));
+            if ($space_offer && $space_offer->available_spots > 0) {
+                $wpdb->update(
+                    $table_space_offers,
+                    array('available_spots' => $space_offer->available_spots - 1),
+                    array('id' => $space_offer->id),
+                    array('%d'),
+                    array('%d')
+                );
+            }
+        }
+
         // Send notification to applicant
         $this->send_decision_notification($bewerbung, $new_status);
 
@@ -335,6 +350,27 @@ class HM_Bewerbungen
             "SELECT * FROM $table_bewerbungen 
              WHERE stand_id = %d AND stand_type = %s 
              ORDER BY created_at DESC",
+            $stand_id,
+            $stand_type
+        ));
+    }
+
+    public static function get_accepted_count($stand_id, $stand_type = 'stand')
+    {
+        global $wpdb;
+        $table_bewerbungen = $wpdb->prefix . 'hm_bewerbungen';
+
+        if ($stand_type === 'space_offer' || $stand_type === 'space') {
+            return (int) $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(*) FROM $table_bewerbungen
+                 WHERE stand_id = %d AND (stand_type = 'space' OR stand_type = 'space_offer') AND status = 'accepted'",
+                $stand_id
+            ));
+        }
+
+        return (int) $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM $table_bewerbungen
+             WHERE stand_id = %d AND stand_type = %s AND status = 'accepted'",
             $stand_id,
             $stand_type
         ));

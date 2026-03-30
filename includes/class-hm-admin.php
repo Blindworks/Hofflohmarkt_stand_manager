@@ -526,7 +526,16 @@ class HM_Admin {
                                     <?php echo esc_html($item->strasse . ' ' . $item->hausnummer); ?><br>
                                     <?php echo esc_html($item->plz . ' ' . $item->ort); ?>
                                 </td>
-                                <td><?php echo esc_html($item->available_spots); ?></td>
+                                <td>
+                                    <?php
+                                    $accepted = HM_Bewerbungen::get_accepted_count($item->id, 'space');
+                                    $total = $item->available_spots + $accepted;
+                                    if ($item->available_spots == 0 && $total > 0): ?>
+                                        <span style="color: red; font-weight: bold;">Alle <?php echo esc_html($total); ?> Plätze vergeben</span>
+                                    <?php else: ?>
+                                        <?php echo esc_html($accepted . ' / ' . $total . ' belegt'); ?>
+                                    <?php endif; ?>
+                                </td>
                                 <td><?php echo esc_html($item->space_description); ?></td>
                                 <td>
                                     <?php
@@ -874,8 +883,18 @@ class HM_Admin {
                         <td><?php echo esc_html($offer->strasse . ' ' . $offer->hausnummer . ', ' . $offer->plz . ' ' . $offer->ort); ?></td>
                     </tr>
                     <tr>
-                        <th>Verfügbare Plätze:</th>
-                        <td><?php echo esc_html($offer->available_spots); ?></td>
+                        <th>Platzbelegung:</th>
+                        <td>
+                            <?php
+                            $accepted = HM_Bewerbungen::get_accepted_count($offer->id, 'space');
+                            $total = $offer->available_spots + $accepted;
+                            if ($offer->available_spots == 0 && $total > 0): ?>
+                                <span style="color: red; font-weight: bold;">Alle <?php echo esc_html($total); ?> Plätze vergeben</span>
+                            <?php else: ?>
+                                <?php echo esc_html($accepted . ' / ' . $total . ' belegt'); ?>
+                                (<?php echo esc_html($offer->available_spots); ?> frei)
+                            <?php endif; ?>
+                        </td>
                     </tr>
                     <tr>
                         <th>Beschreibung:</th>
