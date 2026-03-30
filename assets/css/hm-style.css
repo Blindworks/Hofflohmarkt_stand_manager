@@ -143,25 +143,45 @@
 
 /* ===== Popup Content ===== */
 .hm-popup {
-    padding: 16px 18px;
+    padding: 0;
 }
 
 .hm-popup-header {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 8px;
+    padding: 14px 18px 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Farbiger Top-Akzent je nach Typ */
+.hm-popup--stand .hm-popup-header {
+    border-top: 3px solid var(--hm-blue);
+}
+
+.hm-popup--nest .hm-popup-header {
+    border-top: 3px solid var(--hm-yellow);
+}
+
+.hm-popup--space .hm-popup-header {
+    border-top: 3px solid var(--hm-green);
 }
 
 .hm-popup-badge {
-    display: inline-block;
-    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
-    padding: 3px 8px;
-    border-radius: 4px;
+    letter-spacing: 0.4px;
+    padding: 4px 10px;
+    border-radius: 6px;
     color: white;
+}
+
+.hm-popup-badge svg {
+    flex-shrink: 0;
 }
 
 .hm-popup-badge--nest {
@@ -178,37 +198,101 @@
 }
 
 .hm-popup-address {
-    font-weight: 600;
-    margin-bottom: 6px;
+    font-weight: 700;
+    color: var(--hm-blue);
+    padding: 12px 18px 0;
+    margin-bottom: 12px;
 }
 
 .hm-popup-detail {
     color: #666;
     font-size: 13px;
+    padding: 0 18px;
     margin-bottom: 4px;
 }
 
-.hm-popup-categories {
+/* ===== Nest-Info Block ===== */
+.hm-popup-nest-info {
     display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-top: 8px;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 18px 0;
+    padding: 8px 12px;
+    background: #fef9e7;
+    border: 1px solid #f5e6a3;
+    border-left: 3px solid var(--hm-yellow);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--hm-dark);
+}
+
+.hm-popup-nest-info svg {
+    flex-shrink: 0;
+    color: #b8960c;
+}
+
+/* ===== Kategorien ===== */
+.hm-popup-categories {
+    margin: 10px 18px 14px;
+    padding-top: 10px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.hm-popup-categories-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #999;
+    margin-bottom: 6px;
+}
+
+.hm-popup-categories-label svg {
+    color: #bbb;
+}
+
+.hm-popup-categories-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .hm-popup-category {
-    background: var(--hm-light-bg);
-    color: #555;
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 12px;
-    border: 1px solid #e5e5e5;
+    font-size: 13px;
+    color: var(--hm-dark);
+    padding: 3px 0 3px 14px;
+    position: relative;
 }
 
+.hm-popup-category::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--hm-blue);
+}
+
+.hm-popup--nest .hm-popup-category::before {
+    background-color: var(--hm-yellow);
+}
+
+.hm-popup--space .hm-popup-category::before {
+    background-color: var(--hm-green);
+}
+
+/* ===== Platz-Info ===== */
 .hm-popup-spots {
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-top: 8px;
+    margin: 8px 18px 0;
     padding: 6px 10px;
     background: #f0faf0;
     border-radius: 6px;
@@ -218,6 +302,11 @@
 
 .hm-popup-spots strong {
     color: var(--hm-green);
+}
+
+/* ===== Bewerben-Button ===== */
+.hm-bewerbung-btn {
+    margin: 10px 18px 14px;
 }
 
 /* ===== Responsive ===== */

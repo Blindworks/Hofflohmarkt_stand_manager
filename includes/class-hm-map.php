@@ -15,7 +15,8 @@ class HM_Map
         wp_enqueue_style('leaflet-css', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', array(), '1.9.4');
         wp_enqueue_script('leaflet-js', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', array(), '1.9.4', true);
 
-        // Enqueue our custom map script
+        // Enqueue our custom styles and map script
+        wp_enqueue_style('hm-style-css', HM_PLUGIN_URL . 'assets/css/hm-style.css', array('leaflet-css'), time());
         wp_enqueue_script('hm-map-js', HM_PLUGIN_URL . 'assets/js/hm-map.js', array('leaflet-js', 'jquery'), time(), true);
 
         // Localize script with stand data

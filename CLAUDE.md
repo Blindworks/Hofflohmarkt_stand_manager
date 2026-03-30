@@ -54,6 +54,8 @@ Der Einstiegspunkt `hofflohmarkt-stand-manager.php` lädt alle Klassen und insta
 
 - `assets/js/hm-map.js` + `assets/css/hm-style.css` – Karten-Darstellung (Leaflet-Marker, Popups mit Bewerbungsformular)
 - `assets/js/hm-bewerbung.js` + `assets/css/hm-bewerbung.css` – Modal-Dialog und AJAX für Bewerbungen
+- Die Grundfarben des Logos sind: (Grün #7AB648, Gelb #F5D000, Blau #00A3D9). Diese sollten nach Möglichkeit im Design berücksichtiogt werden
+- Als Icons diese benutzen: https://lucide.dev/icons/
 
 Leaflet wird von `unpkg.com` geladen (Version 1.9.4).
 
