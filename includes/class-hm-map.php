@@ -27,7 +27,16 @@ class HM_Map
 
     public function render_map()
     {
-        return '<div id="hm-map" style="height: 500px; width: 100%;"></div>';
+        $html  = '<div class="hm-map-wrapper">';
+        $html .= '<div id="hm-map"></div>';
+        $html .= '<div class="hm-map-legend">';
+        $html .= '<div class="hm-legend-title">Legende</div>';
+        $html .= '<div class="hm-legend-item"><span class="hm-legend-marker hm-legend-marker--blue"></span><span>Stand</span></div>';
+        $html .= '<div class="hm-legend-item"><span class="hm-legend-marker hm-legend-marker--yellow"></span><span>Hofflohmarkt Nest</span></div>';
+        $html .= '<div class="hm-legend-item"><span class="hm-legend-marker hm-legend-marker--green"></span><span>Bietet Platz an</span></div>';
+        $html .= '</div>';
+        $html .= '</div>';
+        return $html;
     }
 
     private function get_active_stands()

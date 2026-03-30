@@ -1,5 +1,15 @@
-/* Hofflohmarkt Stand Manager Styles */
+/* ===== Hofflohmarkt Brand Tokens ===== */
+:root {
+    --hm-green: #7AB648;
+    --hm-yellow: #F5D000;
+    --hm-blue: #00A3D9;
+    --hm-dark: #2D2D2D;
+    --hm-light-bg: #F7F9FC;
+    --hm-radius: 12px;
+    --hm-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+}
 
+/* ===== Registration Form ===== */
 .hm-registration-form {
     max-width: 600px;
     margin: 0 auto;
@@ -28,8 +38,198 @@
     border-radius: 4px;
 }
 
-.hm-map-container {
-    height: 500px;
+/* ===== Map Wrapper ===== */
+.hm-map-wrapper {
+    position: relative;
+    border-radius: var(--hm-radius);
+    overflow: hidden;
+    box-shadow: var(--hm-shadow);
+    border: 1px solid #e0e0e0;
+    margin: 20px 0;
+}
+
+#hm-map {
+    height: 550px;
     width: 100%;
-    border: 1px solid #ccc;
+    z-index: 1;
+}
+
+/* ===== SVG Marker Reset ===== */
+.hm-svg-marker {
+    background: none !important;
+    border: none !important;
+}
+
+/* ===== Map Legend ===== */
+.hm-map-legend {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 10px;
+    padding: 14px 18px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.hm-legend-title {
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+.hm-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    color: var(--hm-dark);
+}
+
+.hm-legend-item:last-child {
+    margin-bottom: 0;
+}
+
+.hm-legend-marker {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.hm-legend-marker--blue {
+    background-color: var(--hm-blue);
+}
+
+.hm-legend-marker--yellow {
+    background-color: var(--hm-yellow);
+}
+
+.hm-legend-marker--green {
+    background-color: var(--hm-green);
+}
+
+/* ===== Leaflet Popup Overrides ===== */
+.leaflet-popup-content-wrapper {
+    border-radius: 10px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.leaflet-popup-content {
+    margin: 0 !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--hm-dark);
+    min-width: 220px;
+}
+
+.leaflet-popup-tip {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* ===== Popup Content ===== */
+.hm-popup {
+    padding: 16px 18px;
+}
+
+.hm-popup-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.hm-popup-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    color: white;
+}
+
+.hm-popup-badge--nest {
+    background-color: var(--hm-yellow);
+    color: var(--hm-dark);
+}
+
+.hm-popup-badge--space {
+    background-color: var(--hm-green);
+}
+
+.hm-popup-badge--stand {
+    background-color: var(--hm-blue);
+}
+
+.hm-popup-address {
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.hm-popup-detail {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.hm-popup-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.hm-popup-category {
+    background: var(--hm-light-bg);
+    color: #555;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    border: 1px solid #e5e5e5;
+}
+
+.hm-popup-spots {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 6px 10px;
+    background: #f0faf0;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--hm-dark);
+}
+
+.hm-popup-spots strong {
+    color: var(--hm-green);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+    #hm-map {
+        height: 400px;
+    }
+
+    .hm-map-legend {
+        bottom: 12px;
+        left: 12px;
+        padding: 10px 14px;
+        font-size: 12px;
+    }
 }
