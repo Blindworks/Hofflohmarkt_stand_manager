@@ -205,20 +205,24 @@ class HM_Bewerbungen
         global $wpdb;
         $table_bewerbungen = $wpdb->prefix . 'hm_bewerbungen';
 
-        // Get bewerbung by ID and token
+        // Get bewerbung by ID first to check if it exists
         $bewerbung = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM $table_bewerbungen WHERE id = %d AND action_token = %s",
-            $bewerbung_id,
-            $token
+            "SELECT * FROM $table_bewerbungen WHERE id = %d",
+            $bewerbung_id
         ));
 
         if (!$bewerbung) {
-            wp_die('Bewerbung nicht gefunden oder ungültiger Link.');
+            wp_die('Bewerbung nicht gefunden.');
         }
 
         // Check if already processed
         if ($bewerbung->status !== 'pending') {
             wp_die('Diese Bewerbung wurde bereits bearbeitet.');
+        }
+
+        // Check token
+        if ($bewerbung->action_token !== $token) {
+            wp_die('Ungültiger Link.');
         }
 
         // Update status

@@ -446,9 +446,43 @@ class HM_Admin {
             }
             
             echo '<div class="updated"><p>Status aktualisiert.</p></div>';
+        } elseif (($action == 'accept_application' || $action == 'reject_application') && isset($_GET['bewerbung_id'])) {
+            $bewerbung_id = intval($_GET['bewerbung_id']);
+            $nonce_action = 'hm_' . $action . '_' . $bewerbung_id;
+            
+            if (check_admin_referer($nonce_action)) {
+                $table_bewerbungen = $wpdb->prefix . 'hm_bewerbungen';
+                $bewerbung = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_bewerbungen WHERE id = %d", $bewerbung_id));
+                
+                if ($bewerbung && $bewerbung->status === 'pending') {
+                    if ($action == 'accept_application') {
+                        // Accept
+                        $wpdb->update($table_bewerbungen, array('status' => 'accepted'), array('id' => $bewerbung_id));
+                        
+                        // Decrement spots
+                        $space_offer = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_space_offers WHERE id = %d", $bewerbung->stand_id));
+                        if ($space_offer && $space_offer->available_spots > 0) {
+                            $wpdb->update(
+                                $table_space_offers, 
+                                array('available_spots' => $space_offer->available_spots - 1), 
+                                array('id' => $space_offer->id),
+                                array('%d'),
+                                array('%d')
+                            );
+                        }
+                        
+                        echo '<div class="updated"><p>Bewerbung angenommen. Verfügbare Plätze wurden aktualisiert.</p></div>';
+                    } else {
+                        // Reject
+                        $wpdb->update($table_bewerbungen, array('status' => 'rejected'), array('id' => $bewerbung_id));
+                        echo '<div class="updated"><p>Bewerbung abgelehnt.</p></div>';
+                    }
+                }
+            }
         }
 
-        $items = $wpdb->get_results("SELECT * FROM $table_space_offers ORDER BY created_at DESC");
+        $items = $wpdb->get_results("SELECT * FROM $table_spa
+        ce_offers ORDER BY created_at DESC");
 
         ?>
         <div class="wrap">
@@ -851,6 +885,7 @@ class HM_Admin {
                                 <th>Telefon</th>
                                 <th>Nachricht</th>
                                 <th>Status</th>
+                                <th>Aktionen</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -864,10 +899,16 @@ class HM_Admin {
                                     <td>
                                         <?php if ($bewerbung->status === 'pending'): ?>
                                             <span style="color: orange;">Ausstehend</span>
-                                        <?php elseif ($bewerbung->status === 'approved'): ?>
+                                        <?php elseif ($bewerbung->status === 'accepted'): ?>
                                             <span style="color: green;">Genehmigt</span>
                                         <?php elseif ($bewerbung->status === 'rejected'): ?>
                                             <span style="color: red;">Abgelehnt</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if ($bewerbung->status === 'pending'): ?>
+                                            <a href="<?php echo wp_nonce_url(admin_url('admin.php?page=hm_space_offers&action=accept_application&bewerbung_id=' . $bewerbung->id), 'hm_accept_application_' . $bewerbung->id); ?>" class="button button-small button-primary">Annehmen</a>
+                                            <a href="<?php echo wp_nonce_url(admin_url('admin.php?page=hm_space_offers&action=reject_application&bewerbung_id=' . $bewerbung->id), 'hm_reject_application_' . $bewerbung->id); ?>" class="button button-small">Ablehnen</a>
                                         <?php endif; ?>
                                     </td>
                                 </tr>
