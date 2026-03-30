@@ -77,12 +77,6 @@ jQuery(document).ready(function ($) {
 
         html += '<div class="hm-popup-address">' + stand.address + '</div>';
 
-        if (stand.nest) {
-            html += '<div class="hm-popup-nest-info">';
-            html += ICONS.users;
-            html += '<span>Dieses Nest bietet Platz für weitere Stände</span>';
-            html += '</div>';
-        }
 
         if (stand.provides_space) {
             if (stand.available_spots) {

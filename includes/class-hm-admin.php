@@ -320,7 +320,7 @@ class HM_Admin {
                                 <td>
                                     <label>
                                         <input name="hm_hofflohmarkt_nest" type="checkbox" id="hm_hofflohmarkt_nest" value="1" <?php checked($item->hofflohmarkt_nest, 1); ?>>
-                                        Ist ein Nest (Platz für weitere Stände)
+                                        Ist ein Nest (Zusammenschluss mehrerer Stände)
                                     </label>
                                 </td>
                             </tr>
@@ -481,8 +481,7 @@ class HM_Admin {
             }
         }
 
-        $items = $wpdb->get_results("SELECT * FROM $table_spa
-        ce_offers ORDER BY created_at DESC");
+        $items = $wpdb->get_results("SELECT * FROM $table_space_offers ORDER BY created_at DESC");
 
         ?>
         <div class="wrap">

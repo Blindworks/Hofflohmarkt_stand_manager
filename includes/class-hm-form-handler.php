@@ -69,7 +69,7 @@ class HM_Form_Handler
                     style="margin-top: 30px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
                     <label>
                         <input type="checkbox" name="hm_hofflohmarkt_nest" value="1">
-                        Hofflohmarkt Nest
+                        Hofflohmarkt Nest (Zusammenschluss mehrerer Stände)
                     </label>
                 </div>
 
