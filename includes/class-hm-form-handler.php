@@ -29,6 +29,7 @@ class HM_Form_Handler
             <form method="post" action="">
                 <?php wp_nonce_field('hm_register_stand', 'hm_register_nonce'); ?>
                 <input type="hidden" name="hm_form_type" value="stand_registration">
+                <input type="hidden" name="hm_submit_stand" value="1">
 
                 <div class="hm-form-row">
                     <div class="hm-form-group hm-col-50">
@@ -92,12 +93,12 @@ class HM_Form_Handler
                     <?php endif; ?>
                 </div>
 
-                <button type="submit" name="hm_submit_stand" class="button" style="margin-top: 20px;">Stand Anmelden</button>
+                <button type="submit" id="hm_submit_stand_btn" class="button" style="margin-top: 20px;">Stand Anmelden</button>
             </form>
         </div>
         <script>
         document.querySelector('.hm-registration-form form').addEventListener('submit', function () {
-            var btn = this.querySelector('button[name="hm_submit_stand"]');
+            var btn = this.querySelector('#hm_submit_stand_btn');
             btn.disabled = true;
             btn.classList.add('hm-btn-loading');
             btn.innerHTML = '<span class="hm-btn-spinner"></span>Wird gesendet\u2026';
@@ -229,12 +230,11 @@ class HM_Form_Handler
                 'plz' => $plz,
                 'ort' => $ort,
                 'hofflohmarkt_nest' => $nest,
-                'hofflohmarkt_nest' => $nest,
                 'active' => 0, // Default inactive
                 'lat' => $lat,
                 'lng' => $lng
             ),
-            array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%s', '%f', '%f')
+            array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%f', '%f')
         );
 
         if ($result) {
