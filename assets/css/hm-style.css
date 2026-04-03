@@ -51,6 +51,42 @@
 .hm-col-80 { flex: 0 0 calc(80% - 6px); min-width: 0; }
 .hm-col-20 { flex: 0 0 calc(20% - 6px); min-width: 0; }
 
+/* ===== Success Message ===== */
+.hm-success-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: #f0f9e8;
+    border: 1.5px solid var(--hm-green);
+    border-radius: var(--hm-radius);
+    color: #3a6e1a;
+    font-weight: 500;
+}
+.hm-success-message svg {
+    flex-shrink: 0;
+    color: var(--hm-green);
+}
+
+/* ===== Error Message ===== */
+.hm-error-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: #fef2f2;
+    border: 1.5px solid #fecaca;
+    border-radius: var(--hm-radius);
+    color: #b91c1c;
+    font-weight: 500;
+}
+.hm-error-message svg {
+    flex-shrink: 0;
+    color: #b91c1c;
+}
+
 /* ===== Map Wrapper ===== */
 .hm-map-wrapper {
     position: relative;

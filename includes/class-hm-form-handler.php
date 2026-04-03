@@ -18,14 +18,8 @@ class HM_Form_Handler
 
         ob_start();
         ?>
-        <div class="hm-registration-form">
+        <div class="hm-registration-form" id="hm-registration-form">
             <h3>Stand registrieren</h3>
-            <?php if (isset($_GET['hm_success'])): ?>
-                <div class="hm-success-message" style="color: green; margin-bottom: 15px;">
-                    Vielen Dank! Dein Stand wurde zur Überprüfung eingereicht.
-                </div>
-            <?php endif; ?>
-
             <form method="post" action="">
                 <?php wp_nonce_field('hm_register_stand', 'hm_register_nonce'); ?>
                 <input type="hidden" name="hm_form_type" value="stand_registration">
@@ -94,6 +88,18 @@ class HM_Form_Handler
                 </div>
 
                 <button type="submit" id="hm_submit_stand_btn" class="button" style="margin-top: 20px;">Stand Anmelden</button>
+                <?php if (isset($_GET['hm_error']) && $_GET['hm_error'] === 'duplicate'): ?>
+                    <div class="hm-error-message">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                        Diese Person ist an dieser Adresse bereits angemeldet.
+                    </div>
+                <?php endif; ?>
+                <?php if (isset($_GET['hm_success'])): ?>
+                    <div id="hm-success" class="hm-success-message">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                        Vielen Dank! Dein Stand wurde zur Überprüfung eingereicht.
+                    </div>
+                <?php endif; ?>
             </form>
         </div>
         <script>
@@ -115,12 +121,6 @@ class HM_Form_Handler
         <div class="hm-space-offer-form">
             <h3>Platz anbieten</h3>
             <p>Du hast keinen eigenen Stand, aber Platz für andere? Biete ihn hier an!</p>
-            <?php if (isset($_GET['hm_space_success'])): ?>
-                <div class="hm-success-message" style="color: green; margin-bottom: 15px;">
-                    Vielen Dank! Dein Platzangebot wurde eingereicht.
-                </div>
-            <?php endif; ?>
-
             <form method="post" action="">
                 <?php wp_nonce_field('hm_offer_space', 'hm_offer_space_nonce'); ?>
                 <input type="hidden" name="hm_form_type" value="space_offer">
@@ -173,8 +173,13 @@ class HM_Form_Handler
                     <textarea name="hm_space_description" id="hm_space_description" rows="3" style="width: 100%;"></textarea>
                 </div>
 
-                <button type="submit" name="hm_submit_space_offer" class="button" style="margin-top: 20px;">Platz
-                    anbieten</button>
+                <button type="submit" name="hm_submit_space_offer" class="button" style="margin-top: 20px;">Platz anbieten</button>
+                <?php if (isset($_GET['hm_space_success'])): ?>
+                    <div id="hm-success" class="hm-success-message">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                        Vielen Dank! Dein Platzangebot wurde eingereicht.
+                    </div>
+                <?php endif; ?>
             </form>
         </div>
         <?php
@@ -213,6 +218,18 @@ class HM_Form_Handler
         $ort = sanitize_text_field($_POST['hm_ort']);
         $nest = isset($_POST['hm_hofflohmarkt_nest']) ? 1 : 0;
         $kategorien = isset($_POST['hm_kategorien']) ? $_POST['hm_kategorien'] : array();
+
+        // Duplikat-Check: gleicher Name + gleiche Adresse
+        $existing = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(*) FROM $table_staende WHERE vorname = %s AND nachname = %s AND strasse = %s AND hausnummer = %s AND plz = %s AND ort = %s",
+                $vorname, $nachname, $strasse, $hausnummer, $plz, $ort
+            )
+        );
+        if ($existing > 0) {
+            wp_redirect(add_query_arg('hm_error', 'duplicate') . '#hm-registration-form');
+            exit;
+        }
 
         // Geocode Address
         $coords = $this->geocode_address($strasse, $hausnummer, $plz, $ort);
@@ -255,7 +272,7 @@ class HM_Form_Handler
             $this->send_registration_email($email, $vorname . ' ' . $nachname);
 
             // Redirect to avoid resubmission
-            wp_redirect(add_query_arg('hm_success', '1'));
+            wp_redirect(add_query_arg('hm_success', '1') . '#hm-success');
             exit;
         }
     }
@@ -308,7 +325,7 @@ class HM_Form_Handler
             $this->send_registration_email($email, $vorname . ' ' . $nachname);
 
             // Redirect to avoid resubmission
-            wp_redirect(add_query_arg('hm_space_success', '1'));
+            wp_redirect(add_query_arg('hm_space_success', '1') . '#hm-success');
             exit;
         }
     }
