@@ -92,6 +92,14 @@ class HM_Form_Handler
                 <button type="submit" name="hm_submit_stand" class="button" style="margin-top: 20px;">Stand Anmelden</button>
             </form>
         </div>
+        <script>
+        document.querySelector('.hm-registration-form form').addEventListener('submit', function () {
+            var btn = this.querySelector('button[name="hm_submit_stand"]');
+            btn.disabled = true;
+            btn.classList.add('hm-btn-loading');
+            btn.innerHTML = '<span class="hm-btn-spinner"></span>Wird gesendet\u2026';
+        });
+        </script>
         <?php
         return ob_get_clean();
     }

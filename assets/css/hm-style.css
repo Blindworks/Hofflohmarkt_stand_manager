@@ -309,6 +309,29 @@
     margin: 10px 18px 14px;
 }
 
+/* ===== Submit Button Spinner ===== */
+@keyframes hm-spin {
+    to { transform: rotate(360deg); }
+}
+
+.hm-btn-spinner {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    border: 2px solid rgba(255, 255, 255, 0.45);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: hm-spin 0.65s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+.hm-btn-loading {
+    opacity: 0.72;
+    cursor: not-allowed !important;
+    pointer-events: none;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 600px) {
     #hm-map {
