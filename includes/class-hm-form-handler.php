@@ -30,14 +30,15 @@ class HM_Form_Handler
                 <?php wp_nonce_field('hm_register_stand', 'hm_register_nonce'); ?>
                 <input type="hidden" name="hm_form_type" value="stand_registration">
 
-                <div class="hm-form-group">
-                    <label for="hm_vorname">Vorname</label>
-                    <input type="text" name="hm_vorname" id="hm_vorname" required>
-                </div>
-
-                <div class="hm-form-group">
-                    <label for="hm_nachname">Nachname</label>
-                    <input type="text" name="hm_nachname" id="hm_nachname" required>
+                <div class="hm-form-row">
+                    <div class="hm-form-group hm-col-50">
+                        <label for="hm_vorname">Vorname</label>
+                        <input type="text" name="hm_vorname" id="hm_vorname" required>
+                    </div>
+                    <div class="hm-form-group hm-col-50">
+                        <label for="hm_nachname">Nachname</label>
+                        <input type="text" name="hm_nachname" id="hm_nachname" required>
+                    </div>
                 </div>
 
                 <div class="hm-form-group">
@@ -45,24 +46,26 @@ class HM_Form_Handler
                     <input type="email" name="hm_email" id="hm_email" required>
                 </div>
 
-                <div class="hm-form-group">
-                    <label for="hm_strasse">Straße</label>
-                    <input type="text" name="hm_strasse" id="hm_strasse" required>
+                <div class="hm-form-row">
+                    <div class="hm-form-group hm-col-80">
+                        <label for="hm_strasse">Straße</label>
+                        <input type="text" name="hm_strasse" id="hm_strasse" required>
+                    </div>
+                    <div class="hm-form-group hm-col-20">
+                        <label for="hm_hausnummer">Nr.</label>
+                        <input type="text" name="hm_hausnummer" id="hm_hausnummer" required>
+                    </div>
                 </div>
 
-                <div class="hm-form-group">
-                    <label for="hm_hausnummer">Hausnummer</label>
-                    <input type="text" name="hm_hausnummer" id="hm_hausnummer" required>
-                </div>
-
-                <div class="hm-form-group">
-                    <label for="hm_plz">PLZ</label>
-                    <input type="text" name="hm_plz" id="hm_plz" required>
-                </div>
-
-                <div class="hm-form-group">
-                    <label for="hm_ort">Ort</label>
-                    <input type="text" name="hm_ort" id="hm_ort" required>
+                <div class="hm-form-row">
+                    <div class="hm-form-group hm-col-50">
+                        <label for="hm_plz">PLZ</label>
+                        <input type="text" name="hm_plz" id="hm_plz" required>
+                    </div>
+                    <div class="hm-form-group hm-col-50">
+                        <label for="hm_ort">Ort</label>
+                        <input type="text" name="hm_ort" id="hm_ort" required>
+                    </div>
                 </div>
 
                 <div class="hm-form-group"
@@ -121,14 +124,15 @@ class HM_Form_Handler
                 <?php wp_nonce_field('hm_offer_space', 'hm_offer_space_nonce'); ?>
                 <input type="hidden" name="hm_form_type" value="space_offer">
 
-                <div class="hm-form-group">
-                    <label for="hm_vorname">Vorname</label>
-                    <input type="text" name="hm_vorname" id="hm_vorname" required>
-                </div>
-
-                <div class="hm-form-group">
-                    <label for="hm_nachname">Nachname</label>
-                    <input type="text" name="hm_nachname" id="hm_nachname" required>
+                <div class="hm-form-row">
+                    <div class="hm-form-group hm-col-50">
+                        <label for="hm_vorname">Vorname</label>
+                        <input type="text" name="hm_vorname" id="hm_vorname" required>
+                    </div>
+                    <div class="hm-form-group hm-col-50">
+                        <label for="hm_nachname">Nachname</label>
+                        <input type="text" name="hm_nachname" id="hm_nachname" required>
+                    </div>
                 </div>
 
                 <div class="hm-form-group">
@@ -136,24 +140,26 @@ class HM_Form_Handler
                     <input type="email" name="hm_email" id="hm_email" required>
                 </div>
 
-                <div class="hm-form-group">
-                    <label for="hm_strasse">Straße</label>
-                    <input type="text" name="hm_strasse" id="hm_strasse" required>
+                <div class="hm-form-row">
+                    <div class="hm-form-group hm-col-80">
+                        <label for="hm_strasse">Straße</label>
+                        <input type="text" name="hm_strasse" id="hm_strasse" required>
+                    </div>
+                    <div class="hm-form-group hm-col-20">
+                        <label for="hm_hausnummer">Hausnummer</label>
+                        <input type="text" name="hm_hausnummer" id="hm_hausnummer" required>
+                    </div>
                 </div>
 
-                <div class="hm-form-group">
-                    <label for="hm_hausnummer">Hausnummer</label>
-                    <input type="text" name="hm_hausnummer" id="hm_hausnummer" required>
-                </div>
-
-                <div class="hm-form-group">
-                    <label for="hm_plz">PLZ</label>
-                    <input type="text" name="hm_plz" id="hm_plz" required>
-                </div>
-
-                <div class="hm-form-group">
-                    <label for="hm_ort">Ort</label>
-                    <input type="text" name="hm_ort" id="hm_ort" required>
+                <div class="hm-form-row">
+                    <div class="hm-form-group hm-col-50">
+                        <label for="hm_plz">PLZ</label>
+                        <input type="text" name="hm_plz" id="hm_plz" required>
+                    </div>
+                    <div class="hm-form-group hm-col-50">
+                        <label for="hm_ort">Ort</label>
+                        <input type="text" name="hm_ort" id="hm_ort" required>
+                    </div>
                 </div>
 
                 <div class="hm-form-group" style="margin-top: 20px;">

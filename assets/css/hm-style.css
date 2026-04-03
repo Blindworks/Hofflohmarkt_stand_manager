@@ -38,6 +38,19 @@
     border-radius: 4px;
 }
 
+.hm-form-row {
+    display: flex;
+    gap: 12px;
+}
+
+.hm-form-row .hm-form-group {
+    margin-bottom: 15px;
+}
+
+.hm-col-50 { flex: 0 0 calc(50% - 6px); min-width: 0; }
+.hm-col-80 { flex: 0 0 calc(80% - 6px); min-width: 0; }
+.hm-col-20 { flex: 0 0 calc(20% - 6px); min-width: 0; }
+
 /* ===== Map Wrapper ===== */
 .hm-map-wrapper {
     position: relative;
