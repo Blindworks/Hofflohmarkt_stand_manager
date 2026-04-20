@@ -56,8 +56,11 @@ jQuery(document).ready(function ($) {
 
     // Popup builder
     function buildPopup(stand) {
+        var isArea = stand.type === 'area';
         var typeClass = 'hm-popup--stand';
-        if (stand.nest) {
+        if (isArea) {
+            typeClass = 'hm-popup--area';
+        } else if (stand.nest) {
             typeClass = 'hm-popup--nest';
         } else if (stand.provides_space) {
             typeClass = 'hm-popup--space';
@@ -66,7 +69,9 @@ jQuery(document).ready(function ($) {
         var html = '<div class="hm-popup ' + typeClass + '">';
 
         html += '<div class="hm-popup-header">';
-        if (stand.nest) {
+        if (isArea) {
+            html += '<span class="hm-popup-badge hm-popup-badge--area">' + ICONS.users + ' Flohmarkt-Hub</span>';
+        } else if (stand.nest) {
             html += '<span class="hm-popup-badge hm-popup-badge--nest">' + ICONS.home + ' Nest</span>';
         } else if (stand.provides_space) {
             html += '<span class="hm-popup-badge hm-popup-badge--space">' + ICONS.mapPinPlus + ' Platzangebot</span>';
@@ -74,6 +79,26 @@ jQuery(document).ready(function ($) {
             html += '<span class="hm-popup-badge hm-popup-badge--stand">' + ICONS.store + ' Stand</span>';
         }
         html += '</div>';
+
+        if (isArea) {
+            html += '<div class="hm-popup-address"><strong>' + stand.title + '</strong><br>' + stand.address + '</div>';
+            html += '<div class="hm-popup-spots"><strong>' + stand.total_stands + '</strong> von ' + stand.capacity + ' Plätzen belegt</div>';
+            if (stand.description) {
+                html += '<div class="hm-popup-detail">' + stand.description + '</div>';
+            }
+            if (stand.category_counts && stand.category_counts.length > 0) {
+                html += '<div class="hm-popup-categories">';
+                html += '<div class="hm-popup-categories-label">' + ICONS.tag + ' Kategorien</div>';
+                html += '<ul class="hm-popup-categories-list">';
+                stand.category_counts.forEach(function (c) {
+                    html += '<li class="hm-popup-category">' + c.name + ' <strong>× ' + c.count + '</strong></li>';
+                });
+                html += '</ul>';
+                html += '</div>';
+            }
+            html += '</div>';
+            return html;
+        }
 
         html += '<div class="hm-popup-address">' + stand.address + '</div>';
 
@@ -127,7 +152,9 @@ jQuery(document).ready(function ($) {
             if (isNaN(lat) || isNaN(lng)) return;
 
             var icon = icons.stand;
-            if (stand.nest) {
+            if (stand.type === 'area') {
+                icon = icons.space;
+            } else if (stand.nest) {
                 icon = icons.nest;
             } else if (stand.provides_space) {
                 icon = icons.space;

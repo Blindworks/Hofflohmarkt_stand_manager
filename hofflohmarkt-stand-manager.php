@@ -23,6 +23,7 @@ require_once HM_PLUGIN_PATH . 'includes/class-hm-admin.php';
 require_once HM_PLUGIN_PATH . 'includes/class-hm-form-handler.php';
 require_once HM_PLUGIN_PATH . 'includes/class-hm-map.php';
 require_once HM_PLUGIN_PATH . 'includes/class-hm-bewerbungen.php';
+require_once HM_PLUGIN_PATH . 'includes/class-hm-stand-counter.php';
 
 // Register activation hook
 register_activation_hook(__FILE__, array('HM_DB', 'install'));
@@ -40,6 +41,7 @@ class Hofflohmarkt_Stand_Manager
 		new HM_Form_Handler();
 		new HM_Map();
 		new HM_Bewerbungen();
+		new HM_Stand_Counter();
 
 		// Enqueue scripts and styles
 		add_action('wp_enqueue_scripts', array($this, 'enqueue_assets'));

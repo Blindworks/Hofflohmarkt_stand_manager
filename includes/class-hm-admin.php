@@ -53,6 +53,15 @@ class HM_Admin {
 
         add_submenu_page(
             'hm_dashboard',
+            'Flohmarkt-Hubs',
+            'Flohmarkt-Hubs',
+            'manage_options',
+            'hm_special_areas',
+            array($this, 'render_special_areas_page')
+        );
+
+        add_submenu_page(
+            'hm_dashboard',
             'Hofflohmärkte',
             'Hofflohmärkte',
             'manage_options',
@@ -957,6 +966,242 @@ class HM_Admin {
                     </table>
                 <?php else: ?>
                     <p>Noch keine Bewerbungen für dieses Platzangebot.</p>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php
+    }
+
+    public function render_special_areas_page() {
+        global $wpdb;
+        $table_areas = $wpdb->prefix . 'hm_special_areas';
+        $table_staende = $wpdb->prefix . 'hm_staende';
+        $table_hofflohmaerkte = $wpdb->prefix . 'hm_hofflohmaerkte';
+
+        $action = isset($_GET['action']) ? $_GET['action'] : 'list';
+        $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+        // Detail view
+        if ($action === 'view' && $id > 0) {
+            $this->render_special_area_detail($id);
+            return;
+        }
+
+        // Delete
+        if ($action === 'delete_area' && $id > 0 && check_admin_referer('hm_delete_area_' . $id)) {
+            $wpdb->delete($table_areas, array('id' => $id));
+            echo '<div class="updated"><p>Flohmarkt-Hub gelöscht.</p></div>';
+        }
+
+        // Re-Geocode
+        if ($action === 'geocode_area' && $id > 0 && check_admin_referer('hm_geocode_area_' . $id)) {
+            $area = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_areas WHERE id = %d", $id));
+            if ($area) {
+                require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-hm-form-handler.php';
+                $coords = HM_Form_Handler::geocode_address($area->strasse, $area->hausnummer, $area->plz, $area->ort);
+                if ($coords) {
+                    $wpdb->update($table_areas, array('lat' => $coords['lat'], 'lng' => $coords['lng']), array('id' => $id), array('%f', '%f'), array('%d'));
+                    echo '<div class="updated"><p>Geocoding erfolgreich.</p></div>';
+                } else {
+                    echo '<div class="error"><p>Geocoding fehlgeschlagen.</p></div>';
+                }
+            }
+        }
+
+        // Save (create / update)
+        if (isset($_POST['hm_submit_area']) && check_admin_referer('hm_save_area')) {
+            $post_id = intval($_POST['hm_area_id']);
+            $data = array(
+                'name'            => sanitize_text_field($_POST['hm_name']),
+                'strasse'         => sanitize_text_field($_POST['hm_strasse']),
+                'hausnummer'      => sanitize_text_field($_POST['hm_hausnummer']),
+                'plz'             => sanitize_text_field($_POST['hm_plz']),
+                'ort'             => sanitize_text_field($_POST['hm_ort']),
+                'capacity'        => intval($_POST['hm_capacity']),
+                'description'     => sanitize_textarea_field($_POST['hm_description']),
+                'active'          => isset($_POST['hm_active']) ? 1 : 0,
+                'hofflohmarkt_id' => intval($_POST['hm_hofflohmarkt_id']) ?: null,
+            );
+            $formats = array('%s','%s','%s','%s','%s','%d','%s','%d','%d');
+
+            require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-hm-form-handler.php';
+            $coords = HM_Form_Handler::geocode_address($data['strasse'], $data['hausnummer'], $data['plz'], $data['ort']);
+            if ($coords) {
+                $data['lat'] = $coords['lat'];
+                $data['lng'] = $coords['lng'];
+                $formats[] = '%f';
+                $formats[] = '%f';
+            }
+
+            if ($post_id > 0) {
+                $wpdb->update($table_areas, $data, array('id' => $post_id), $formats, array('%d'));
+                echo '<div class="updated"><p>Flohmarkt-Hub aktualisiert.</p></div>';
+            } else {
+                $wpdb->insert($table_areas, $data, $formats);
+                echo '<div class="updated"><p>Flohmarkt-Hub angelegt.</p></div>';
+            }
+        }
+
+        // Edit prefill
+        $edit = null;
+        if ($action === 'edit_area' && $id > 0) {
+            $edit = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_areas WHERE id = %d", $id));
+        }
+
+        $areas = $wpdb->get_results("SELECT * FROM $table_areas ORDER BY name ASC");
+        $hofflohmaerkte = $wpdb->get_results("SELECT * FROM $table_hofflohmaerkte ORDER BY date DESC");
+
+        $name_val = $edit ? $edit->name : '';
+        $strasse_val = $edit ? $edit->strasse : '';
+        $hausnummer_val = $edit ? $edit->hausnummer : '';
+        $plz_val = $edit ? $edit->plz : '';
+        $ort_val = $edit ? $edit->ort : '';
+        $capacity_val = $edit ? $edit->capacity : 0;
+        $description_val = $edit ? $edit->description : '';
+        $active_val = $edit ? $edit->active : 1;
+        $hm_val = $edit ? $edit->hofflohmarkt_id : 0;
+        $id_val = $edit ? $edit->id : 0;
+        ?>
+        <div class="wrap">
+            <h1>Flohmarkt-Hubs verwalten</h1>
+            <p>Große Gelände (Schulhöfe, Plätze), auf denen sich viele Teilnehmer mit eigenem Tisch einen Stand buchen können.</p>
+
+            <div style="display: flex; gap: 20px;">
+                <div style="flex: 1;">
+                    <h2><?php echo $edit ? 'Hub bearbeiten' : 'Neuen Hub anlegen'; ?></h2>
+                    <form method="post" action="<?php echo remove_query_arg(array('action', 'id')); ?>">
+                        <?php wp_nonce_field('hm_save_area'); ?>
+                        <input type="hidden" name="hm_area_id" value="<?php echo esc_attr($id_val); ?>">
+                        <table class="form-table">
+                            <tr><th><label for="hm_name">Name</label></th>
+                                <td><input type="text" name="hm_name" id="hm_name" class="regular-text" value="<?php echo esc_attr($name_val); ?>" required></td></tr>
+                            <tr><th><label for="hm_strasse">Straße</label></th>
+                                <td><input type="text" name="hm_strasse" id="hm_strasse" class="regular-text" value="<?php echo esc_attr($strasse_val); ?>"></td></tr>
+                            <tr><th><label for="hm_hausnummer">Hausnummer</label></th>
+                                <td><input type="text" name="hm_hausnummer" id="hm_hausnummer" class="small-text" value="<?php echo esc_attr($hausnummer_val); ?>"></td></tr>
+                            <tr><th><label for="hm_plz">PLZ</label></th>
+                                <td><input type="text" name="hm_plz" id="hm_plz" class="small-text" value="<?php echo esc_attr($plz_val); ?>"></td></tr>
+                            <tr><th><label for="hm_ort">Ort</label></th>
+                                <td><input type="text" name="hm_ort" id="hm_ort" class="regular-text" value="<?php echo esc_attr($ort_val); ?>"></td></tr>
+                            <tr><th><label for="hm_capacity">Anzahl Plätze</label></th>
+                                <td><input type="number" name="hm_capacity" id="hm_capacity" class="small-text" min="0" value="<?php echo esc_attr($capacity_val); ?>"></td></tr>
+                            <tr><th><label for="hm_description">Zusatzinfos</label></th>
+                                <td><textarea name="hm_description" id="hm_description" rows="4" class="large-text"><?php echo esc_textarea($description_val); ?></textarea></td></tr>
+                            <tr><th><label for="hm_hofflohmarkt_id">Hofflohmarkt</label></th>
+                                <td>
+                                    <select name="hm_hofflohmarkt_id" id="hm_hofflohmarkt_id">
+                                        <option value="0">-- Keiner --</option>
+                                        <?php foreach ($hofflohmaerkte as $hm): ?>
+                                            <option value="<?php echo $hm->id; ?>" <?php selected($hm_val, $hm->id); ?>>
+                                                <?php echo esc_html($hm->name . ' (' . $hm->date . ')'); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </td></tr>
+                            <tr><th><label for="hm_active">Aktiv</label></th>
+                                <td><input type="checkbox" name="hm_active" id="hm_active" value="1" <?php checked($active_val, 1); ?>></td></tr>
+                        </table>
+                        <?php submit_button($edit ? 'Aktualisieren' : 'Speichern', 'primary', 'hm_submit_area'); ?>
+                        <?php if ($edit): ?>
+                            <a href="<?php echo admin_url('admin.php?page=hm_special_areas'); ?>" class="button">Abbrechen</a>
+                        <?php endif; ?>
+                    </form>
+                </div>
+
+                <div style="flex: 2;">
+                    <h2>Vorhandene Hubs</h2>
+                    <table class="wp-list-table widefat fixed striped">
+                        <thead><tr>
+                            <th>ID</th><th>Name</th><th>Adresse</th><th>Belegung</th><th>Geo</th><th>Aktiv</th><th>Aktionen</th>
+                        </tr></thead>
+                        <tbody>
+                        <?php if ($areas): foreach ($areas as $a):
+                            $belegt = intval($wpdb->get_var($wpdb->prepare(
+                                "SELECT COUNT(*) FROM $table_staende WHERE special_area_id = %d AND active = 1", $a->id
+                            ))); ?>
+                            <tr>
+                                <td><?php echo $a->id; ?></td>
+                                <td><strong><?php echo esc_html($a->name); ?></strong></td>
+                                <td><?php echo esc_html(trim($a->strasse . ' ' . $a->hausnummer)); ?><br>
+                                    <?php echo esc_html(trim($a->plz . ' ' . $a->ort)); ?></td>
+                                <td><?php echo $belegt . ' / ' . intval($a->capacity); ?></td>
+                                <td><?php echo ($a->lat && $a->lng) ? '<span style="color:green;">OK</span>' : '<span style="color:red;">Fehler</span>'; ?></td>
+                                <td><?php echo $a->active ? 'Ja' : 'Nein'; ?></td>
+                                <td>
+                                    <a href="<?php echo admin_url('admin.php?page=hm_special_areas&action=view&id=' . $a->id); ?>" class="button button-small button-primary">Details</a>
+                                    <a href="<?php echo admin_url('admin.php?page=hm_special_areas&action=edit_area&id=' . $a->id); ?>" class="button button-small">Bearbeiten</a>
+                                    <a href="<?php echo wp_nonce_url(admin_url('admin.php?page=hm_special_areas&action=geocode_area&id=' . $a->id), 'hm_geocode_area_' . $a->id); ?>" class="button button-small" title="Geocoding"><span class="dashicons dashicons-location" style="margin-top:3px;"></span></a>
+                                    <a href="<?php echo wp_nonce_url(admin_url('admin.php?page=hm_special_areas&action=delete_area&id=' . $a->id), 'hm_delete_area_' . $a->id); ?>" class="button button-small button-link-delete" onclick="return confirm('Wirklich löschen?');">Löschen</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; else: ?>
+                            <tr><td colspan="7">Keine Flohmarkt-Hubs vorhanden.</td></tr>
+                        <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
+
+    private function render_special_area_detail($id) {
+        global $wpdb;
+        $table_areas = $wpdb->prefix . 'hm_special_areas';
+        $table_staende = $wpdb->prefix . 'hm_staende';
+        $table_stand_kat = $wpdb->prefix . 'hm_stand_kategorien';
+        $table_kat = $wpdb->prefix . 'hm_kategorien';
+
+        $area = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_areas WHERE id = %d", $id));
+        if (!$area) {
+            echo '<div class="error"><p>Flohmarkt-Hub nicht gefunden.</p></div>';
+            return;
+        }
+
+        $stands = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM $table_staende WHERE special_area_id = %d ORDER BY created_at DESC", $id
+        ));
+        $belegt = 0;
+        foreach ($stands as $s) { if ($s->active) $belegt++; }
+        ?>
+        <div class="wrap">
+            <h1>Flohmarkt-Hub: <?php echo esc_html($area->name); ?></h1>
+            <a href="<?php echo admin_url('admin.php?page=hm_special_areas'); ?>" class="button">← Zurück zur Übersicht</a>
+
+            <div style="margin-top:20px; background:#fff; padding:20px; border:1px solid #ccd0d4;">
+                <h2>Details</h2>
+                <table class="form-table">
+                    <tr><th>Adresse:</th><td><?php echo esc_html(trim($area->strasse . ' ' . $area->hausnummer . ', ' . $area->plz . ' ' . $area->ort)); ?></td></tr>
+                    <tr><th>Belegung:</th><td><?php echo $belegt . ' / ' . intval($area->capacity); ?></td></tr>
+                    <tr><th>Beschreibung:</th><td><?php echo nl2br(esc_html($area->description)); ?></td></tr>
+                    <tr><th>Status:</th><td><?php echo $area->active ? '<span style="color:green;font-weight:bold;">Aktiv</span>' : '<span style="color:orange;">Inaktiv</span>'; ?></td></tr>
+                </table>
+            </div>
+
+            <div style="margin-top:20px; background:#fff; padding:20px; border:1px solid #ccd0d4;">
+                <h2>Gebuchte Stände (<?php echo count($stands); ?>)</h2>
+                <?php if ($stands): ?>
+                <table class="wp-list-table widefat fixed striped">
+                    <thead><tr><th>ID</th><th>Name</th><th>E-Mail</th><th>Kategorien</th><th>Aktiv</th><th>Erstellt</th><th>Aktion</th></tr></thead>
+                    <tbody>
+                    <?php foreach ($stands as $s):
+                        $cats = $wpdb->get_col($wpdb->prepare(
+                            "SELECT k.name FROM $table_stand_kat sk JOIN $table_kat k ON k.id = sk.kategorie_id WHERE sk.stand_id = %d", $s->id
+                        )); ?>
+                        <tr>
+                            <td><?php echo $s->id; ?></td>
+                            <td><strong><?php echo esc_html($s->vorname . ' ' . $s->nachname); ?></strong></td>
+                            <td><?php echo esc_html($s->email); ?></td>
+                            <td><?php echo esc_html(implode(', ', $cats)); ?></td>
+                            <td><?php echo $s->active ? '<span style="color:green;">Aktiv</span>' : '<span style="color:orange;">Inaktiv</span>'; ?></td>
+                            <td><?php echo esc_html($s->created_at); ?></td>
+                            <td><a href="<?php echo admin_url('admin.php?page=hm_dashboard&action=edit&id=' . $s->id); ?>" class="button button-small">Bearbeiten</a></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <?php else: ?>
+                    <p>Noch keine Stände für diese Area angemeldet.</p>
                 <?php endif; ?>
             </div>
         </div>

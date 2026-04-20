@@ -31,11 +31,38 @@
 
 .hm-form-group input[type="text"],
 .hm-form-group input[type="email"],
+.hm-form-group input[type="number"],
+.hm-form-group select,
 .hm-form-group textarea {
     width: 100%;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
+}
+
+/* ===== Flohmarkt-Hub Popup Variante ===== */
+.hm-popup--area .hm-popup-header {
+    border-top: 3px solid var(--hm-green);
+}
+.hm-popup-badge--area {
+    background: var(--hm-green);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+}
+.hm-popup--area .hm-popup-category::before {
+    background: var(--hm-green);
+}
+.hm-popup--area .hm-popup-category strong {
+    color: var(--hm-green);
+    margin-left: 4px;
 }
 
 .hm-form-row {
@@ -381,6 +408,44 @@
     pointer-events: none;
 }
 
+/* ===== Stand Counter ===== */
+.hm-counter-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 16px 0;
+}
+
+.hm-counter {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 40px;
+    background: #fff;
+    border: 2px solid var(--hm-green);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    line-height: 1.1;
+}
+
+.hm-counter-number {
+    font-size: 64px;
+    font-weight: 700;
+    color: var(--hm-green);
+    letter-spacing: -0.02em;
+}
+
+.hm-counter-label {
+    margin-top: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--hm-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 600px) {
     #hm-map {
@@ -392,5 +457,17 @@
         left: 12px;
         padding: 10px 14px;
         font-size: 12px;
+    }
+
+    .hm-counter {
+        padding: 18px 28px;
+    }
+
+    .hm-counter-number {
+        font-size: 48px;
+    }
+
+    .hm-counter-label {
+        font-size: 13px;
     }
 }

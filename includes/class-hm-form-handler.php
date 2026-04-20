@@ -7,6 +7,7 @@ class HM_Form_Handler
     {
         add_shortcode('hm_registration', array($this, 'render_registration_form'));
         add_shortcode('hm_offer_space', array($this, 'render_space_offer_form'));
+        add_shortcode('hm_area_registration', array($this, 'render_area_registration_form'));
         add_action('init', array($this, 'handle_form_submission'));
     }
 
@@ -196,6 +197,200 @@ class HM_Form_Handler
             $this->process_stand_registration();
         } elseif (isset($_POST['hm_submit_space_offer'])) {
             $this->process_space_offer();
+        } elseif (isset($_POST['hm_submit_area_stand'])) {
+            $this->process_area_registration();
+        }
+    }
+
+    public function render_area_registration_form()
+    {
+        global $wpdb;
+        $table_kategorien = $wpdb->prefix . 'hm_kategorien';
+        $table_areas = $wpdb->prefix . 'hm_special_areas';
+        $table_staende = $wpdb->prefix . 'hm_staende';
+
+        $categories = $wpdb->get_results("SELECT * FROM $table_kategorien WHERE active = 1 ORDER BY name ASC");
+        $areas = $wpdb->get_results("SELECT * FROM $table_areas WHERE active = 1 ORDER BY name ASC");
+
+        // Belegung pro Area
+        $belegung = array();
+        foreach ($areas as $a) {
+            $belegung[$a->id] = intval($wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(*) FROM $table_staende WHERE special_area_id = %d AND active = 1", $a->id
+            )));
+        }
+
+        ob_start();
+        ?>
+        <div class="hm-registration-form" id="hm-area-registration-form">
+            <h3>Stand in Flohmarkt-Hub anmelden</h3>
+            <form method="post" action="">
+                <?php wp_nonce_field('hm_register_area_stand', 'hm_register_area_nonce'); ?>
+                <input type="hidden" name="hm_form_type" value="area_registration">
+                <input type="hidden" name="hm_submit_area_stand" value="1">
+
+                <div class="hm-form-row">
+                    <div class="hm-form-group hm-col-50">
+                        <label for="hm_vorname">Vorname</label>
+                        <input type="text" name="hm_vorname" id="hm_vorname" required>
+                    </div>
+                    <div class="hm-form-group hm-col-50">
+                        <label for="hm_nachname">Nachname</label>
+                        <input type="text" name="hm_nachname" id="hm_nachname" required>
+                    </div>
+                </div>
+
+                <div class="hm-form-group">
+                    <label for="hm_email">E-Mail Adresse</label>
+                    <input type="email" name="hm_email" id="hm_email" required>
+                </div>
+
+                <div class="hm-form-group">
+                    <label for="hm_special_area_id">Flohmarkt-Hub auswählen</label>
+                    <select name="hm_special_area_id" id="hm_special_area_id" required>
+                        <option value="">-- Bitte wählen --</option>
+                        <?php foreach ($areas as $a):
+                            $belegt = isset($belegung[$a->id]) ? $belegung[$a->id] : 0;
+                            $frei = max(0, intval($a->capacity) - $belegt);
+                            $full = ($frei <= 0);
+                            $label = $a->name . ' – ' . $frei . ' von ' . intval($a->capacity) . ' Plätzen frei';
+                            if ($full) { $label .= ' (ausgebucht)'; }
+                            ?>
+                            <option value="<?php echo esc_attr($a->id); ?>" <?php disabled($full); ?>>
+                                <?php echo esc_html($label); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="hm-form-group">
+                    <label>Kategorien (Was verkaufst du?)</label><br>
+                    <?php if ($categories): ?>
+                        <div class="hm-categories-list" style="display: flex; flex-direction: column; gap: 2px;">
+                            <?php foreach ($categories as $cat): ?>
+                                <label style="font-weight: normal;">
+                                    <input type="checkbox" name="hm_kategorien[]" value="<?php echo esc_attr($cat->id); ?>">
+                                    <?php echo esc_html($cat->name); ?>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <p>Keine Kategorien verfügbar.</p>
+                    <?php endif; ?>
+                </div>
+
+                <button type="submit" id="hm_submit_area_btn" class="button" style="margin-top: 20px;">Stand Anmelden</button>
+                <?php if (isset($_GET['hm_error']) && $_GET['hm_error'] === 'area_full'): ?>
+                    <div class="hm-error-message">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                        Dieser Flohmarkt-Hub ist leider bereits ausgebucht.
+                    </div>
+                <?php endif; ?>
+                <?php if (isset($_GET['hm_error']) && $_GET['hm_error'] === 'duplicate'): ?>
+                    <div class="hm-error-message">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                        Diese Person ist für diesen Flohmarkt-Hub bereits angemeldet.
+                    </div>
+                <?php endif; ?>
+                <?php if (isset($_GET['hm_area_success'])): ?>
+                    <div id="hm-success" class="hm-success-message">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                        Vielen Dank! Dein Stand wurde zur Überprüfung eingereicht.
+                    </div>
+                <?php endif; ?>
+            </form>
+        </div>
+        <script>
+        document.querySelector('#hm-area-registration-form form').addEventListener('submit', function () {
+            var btn = this.querySelector('#hm_submit_area_btn');
+            btn.disabled = true;
+            btn.classList.add('hm-btn-loading');
+            btn.innerHTML = '<span class="hm-btn-spinner"></span>Wird gesendet\u2026';
+        });
+        </script>
+        <?php
+        return ob_get_clean();
+    }
+
+    private function process_area_registration()
+    {
+        if (!isset($_POST['hm_register_area_nonce']) || !wp_verify_nonce($_POST['hm_register_area_nonce'], 'hm_register_area_stand')) {
+            return;
+        }
+
+        global $wpdb;
+        $table_staende = $wpdb->prefix . 'hm_staende';
+        $table_stand_kategorien = $wpdb->prefix . 'hm_stand_kategorien';
+        $table_areas = $wpdb->prefix . 'hm_special_areas';
+
+        $vorname = sanitize_text_field($_POST['hm_vorname']);
+        $nachname = sanitize_text_field($_POST['hm_nachname']);
+        $email = sanitize_email($_POST['hm_email']);
+        $area_id = intval($_POST['hm_special_area_id']);
+        $kategorien = isset($_POST['hm_kategorien']) ? $_POST['hm_kategorien'] : array();
+
+        $area = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_areas WHERE id = %d AND active = 1", $area_id));
+        if (!$area) {
+            wp_redirect(add_query_arg('hm_error', 'area_full') . '#hm-area-registration-form');
+            exit;
+        }
+
+        // Kapazität prüfen
+        $belegt = intval($wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM $table_staende WHERE special_area_id = %d AND active = 1", $area_id
+        )));
+        if ($belegt >= intval($area->capacity)) {
+            wp_redirect(add_query_arg('hm_error', 'area_full') . '#hm-area-registration-form');
+            exit;
+        }
+
+        // Duplicate-Check innerhalb derselben Area
+        $existing = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM $table_staende WHERE vorname = %s AND nachname = %s AND email = %s AND special_area_id = %d",
+            $vorname, $nachname, $email, $area_id
+        ));
+        if ($existing > 0) {
+            wp_redirect(add_query_arg('hm_error', 'duplicate') . '#hm-area-registration-form');
+            exit;
+        }
+
+        $result = $wpdb->insert(
+            $table_staende,
+            array(
+                'vorname' => $vorname,
+                'nachname' => $nachname,
+                'email' => $email,
+                'strasse' => $area->strasse,
+                'hausnummer' => $area->hausnummer,
+                'plz' => $area->plz,
+                'ort' => $area->ort,
+                'hofflohmarkt_nest' => 0,
+                'active' => 0,
+                'hofflohmarkt_id' => $area->hofflohmarkt_id,
+                'special_area_id' => $area_id,
+                'lat' => $area->lat,
+                'lng' => $area->lng,
+            ),
+            array('%s','%s','%s','%s','%s','%s','%s','%d','%d','%d','%d','%f','%f')
+        );
+
+        if ($result) {
+            $stand_id = $wpdb->insert_id;
+
+            if (!empty($kategorien)) {
+                foreach ($kategorien as $cat_id) {
+                    $wpdb->insert(
+                        $table_stand_kategorien,
+                        array('stand_id' => $stand_id, 'kategorie_id' => intval($cat_id)),
+                        array('%d', '%d')
+                    );
+                }
+            }
+
+            $this->send_registration_email($email, $vorname . ' ' . $nachname);
+
+            wp_redirect(add_query_arg('hm_area_success', '1') . '#hm-success');
+            exit;
         }
     }
 

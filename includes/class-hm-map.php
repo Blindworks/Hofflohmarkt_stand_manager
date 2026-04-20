@@ -34,7 +34,7 @@ class HM_Map
         $html .= '<div class="hm-legend-title">Legende</div>';
         $html .= '<div class="hm-legend-item"><span class="hm-legend-marker hm-legend-marker--blue"></span><span>Stand</span></div>';
         $html .= '<div class="hm-legend-item"><span class="hm-legend-marker hm-legend-marker--yellow"></span><span>Hofflohmarkt Nest</span></div>';
-        $html .= '<div class="hm-legend-item"><span class="hm-legend-marker hm-legend-marker--green"></span><span>Bietet Platz an</span></div>';
+        $html .= '<div class="hm-legend-item"><span class="hm-legend-marker hm-legend-marker--green"></span><span>Flohmarkt-Hub</span></div>';
         $html .= '</div>';
         $html .= '</div>';
         return $html;
@@ -47,14 +47,16 @@ class HM_Map
         $table_space_offers = $wpdb->prefix . 'hm_space_offers';
         $table_stand_kategorien = $wpdb->prefix . 'hm_stand_kategorien';
         $table_kategorien = $wpdb->prefix . 'hm_kategorien';
+        $table_areas = $wpdb->prefix . 'hm_special_areas';
 
         $stands = array();
 
-        // 1. Fetch active regular stands
+        // 1. Fetch active regular stands (excluding those assigned to a Flohmarkt-Hub)
         $results_stands = $wpdb->get_results("
             SELECT id, vorname, nachname, strasse, hausnummer, plz, ort, lat, lng, hofflohmarkt_nest
-            FROM $table_staende 
+            FROM $table_staende
             WHERE active = 1 AND lat IS NOT NULL AND lng IS NOT NULL
+              AND (special_area_id IS NULL OR special_area_id = 0)
         ");
 
         foreach ($results_stands as $row) {
@@ -100,6 +102,52 @@ class HM_Map
                 'accepted_count' => (int) HM_Bewerbungen::get_accepted_count($row->id, 'space'),
                 'space_description' => $row->space_description,
                 'categories' => array() // Space offers don't have categories usually
+            );
+        }
+
+        // 3. Fetch active special areas with category counters
+        $results_areas = $wpdb->get_results("
+            SELECT id, name, strasse, hausnummer, plz, ort, lat, lng, capacity, description
+            FROM $table_areas
+            WHERE active = 1 AND lat IS NOT NULL AND lng IS NOT NULL
+        ");
+
+        foreach ($results_areas as $row) {
+            $total_stands = (int) $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(*) FROM $table_staende WHERE special_area_id = %d AND active = 1",
+                $row->id
+            ));
+
+            $category_counts = $wpdb->get_results($wpdb->prepare(
+                "SELECT k.name, COUNT(DISTINCT s.id) AS cnt
+                 FROM $table_staende s
+                 JOIN $table_stand_kategorien sk ON sk.stand_id = s.id
+                 JOIN $table_kategorien k ON k.id = sk.kategorie_id
+                 WHERE s.special_area_id = %d AND s.active = 1
+                 GROUP BY k.id, k.name
+                 ORDER BY cnt DESC, k.name ASC",
+                $row->id
+            ));
+
+            $cat_list = array();
+            foreach ($category_counts as $c) {
+                $cat_list[] = array('name' => $c->name, 'count' => (int) $c->cnt);
+            }
+
+            $stands[] = array(
+                'id' => 'area_' . $row->id,
+                'type' => 'area',
+                'title' => $row->name,
+                'address' => trim($row->strasse . ' ' . $row->hausnummer . ', ' . $row->plz . ' ' . $row->ort),
+                'lat' => $row->lat,
+                'lng' => $row->lng,
+                'nest' => false,
+                'provides_space' => false,
+                'capacity' => (int) $row->capacity,
+                'total_stands' => $total_stands,
+                'description' => $row->description,
+                'category_counts' => $cat_list,
+                'categories' => array(),
             );
         }
 

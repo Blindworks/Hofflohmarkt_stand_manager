@@ -41,10 +41,12 @@ class HM_DB
             hofflohmarkt_nest boolean DEFAULT 0,
             active boolean DEFAULT 0,
             hofflohmarkt_id mediumint(9) DEFAULT NULL,
+            special_area_id mediumint(9) DEFAULT NULL,
             lat decimal(10, 8) DEFAULT NULL,
             lng decimal(11, 8) DEFAULT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY  (id)
+            PRIMARY KEY  (id),
+            KEY special_area_id (special_area_id)
         ) $charset_collate;";
 
         // Cleanup: Remove old columns from hm_staende if they exist
@@ -104,6 +106,25 @@ class HM_DB
             KEY action_token (action_token)
         ) $charset_collate;";
 
+        // 7. Flohmarkt-Hubs Table
+        $table_special_areas = $wpdb->prefix . 'hm_special_areas';
+        $sql_special_areas = "CREATE TABLE $table_special_areas (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            name varchar(255) NOT NULL,
+            strasse varchar(255) DEFAULT NULL,
+            hausnummer varchar(20) DEFAULT NULL,
+            plz varchar(10) DEFAULT NULL,
+            ort varchar(100) DEFAULT NULL,
+            capacity int DEFAULT 0,
+            description text DEFAULT NULL,
+            lat decimal(10, 8) DEFAULT NULL,
+            lng decimal(11, 8) DEFAULT NULL,
+            active boolean DEFAULT 1,
+            hofflohmarkt_id mediumint(9) DEFAULT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id)
+        ) $charset_collate;";
+
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql_hofflohmaerkte);
         dbDelta($sql_kategorien);
@@ -111,5 +132,6 @@ class HM_DB
         dbDelta($sql_stand_kategorien);
         dbDelta($sql_space_offers);
         dbDelta($sql_bewerbungen);
+        dbDelta($sql_special_areas);
     }
 }
