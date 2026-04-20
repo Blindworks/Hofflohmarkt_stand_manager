@@ -1,10 +1,11 @@
 <?php
 /**
  * Plugin Name: Hofflohmarkt Stand Manager
- * Plugin URI:  https://example.com/hofflohmarkt-stand-manager
- * Description: Manages stands for Hofflohmärkte. Allows user registration and map display.
+ * Plugin URI:  https://blindworks.org/projects/hofflohmarkt.html
+ * Description: Verwaltet Stände für Hofflohmärkte: Frontend-Anmeldung, interaktive Leaflet-Karte, Platzangebote und Bewerbungs-Workflow.
  * Version:     1.0.0
- * Author:      Antigravity
+ * Author:      Blindworks
+ * Author URI:  https://blindworks.org/projects/hofflohmarkt.html
  * Text Domain: hofflohmarkt-stand-manager
  */
 
