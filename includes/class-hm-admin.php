@@ -131,11 +131,16 @@ class HM_Admin {
         global $wpdb;
         $table_staende = $wpdb->prefix . 'hm_staende';
         $table_hofflohmaerkte = $wpdb->prefix . 'hm_hofflohmaerkte';
+        $table_special_areas = $wpdb->prefix . 'hm_special_areas';
 
         $items = $wpdb->get_results("
-            SELECT s.*, h.name as hofflohmarkt_name 
-            FROM $table_staende s 
-            LEFT JOIN $table_hofflohmaerkte h ON s.hofflohmarkt_id = h.id 
+            SELECT s.*,
+                   h.name AS hofflohmarkt_name,
+                   sa.name AS special_area_name,
+                   sa.id   AS special_area_id_join
+            FROM $table_staende s
+            LEFT JOIN $table_hofflohmaerkte h ON s.hofflohmarkt_id = h.id
+            LEFT JOIN $table_special_areas sa ON s.special_area_id = sa.id
             ORDER BY s.created_at DESC
         ");
 
@@ -149,6 +154,7 @@ class HM_Admin {
                         <th>Titel (Name)</th>
                         <th>Adresse</th>
                         <th>Hofflohmarkt</th>
+                        <th>Hub</th>
                         <th>Geocoding</th>
                         <th>Nest</th>
 
@@ -160,7 +166,7 @@ class HM_Admin {
                 <tbody>
                     <?php if ($items): ?>
                         <?php foreach ($items as $item): ?>
-                            <tr>
+                            <tr<?php echo $item->special_area_name ? ' style="background-color: rgba(0, 163, 217, 0.08);"' : ''; ?>>
                                 <td><?php echo esc_html($item->id); ?></td>
                                 <td>
                                     <strong><?php echo esc_html($item->vorname . ' ' . $item->nachname); ?></strong><br>
@@ -171,6 +177,15 @@ class HM_Admin {
                                     <?php echo esc_html($item->plz . ' ' . $item->ort); ?>
                                 </td>
                                 <td><?php echo $item->hofflohmarkt_name ? esc_html($item->hofflohmarkt_name) : '<span style="color:red;">Nicht zugewiesen</span>'; ?></td>
+                                <td>
+                                    <?php if ($item->special_area_name): ?>
+                                        <a href="<?php echo admin_url('admin.php?page=hm_special_areas&action=view&id=' . intval($item->special_area_id_join)); ?>">
+                                            <?php echo esc_html($item->special_area_name); ?>
+                                        </a>
+                                    <?php else: ?>
+                                        <span style="color:#999;">–</span>
+                                    <?php endif; ?>
+                                </td>
                                 <td>
                                     <?php if ($item->lat && $item->lng): ?>
                                         <span style="color: green;" title="<?php echo esc_attr($item->lat . ', ' . $item->lng); ?>">
@@ -186,8 +201,6 @@ class HM_Admin {
                                     <?php if ($item->hofflohmarkt_nest): ?>
                                         <span class="dashicons dashicons-yes" style="color: green;"></span>
                                     <?php endif; ?>
-                                </td>
-
                                 </td>
                                 <td>
                                     <?php if ($item->active): ?>
@@ -205,7 +218,7 @@ class HM_Admin {
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <tr><td colspan="7">Keine Stände gefunden.</td></tr>
+                        <tr><td colspan="10">Keine Stände gefunden.</td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>
