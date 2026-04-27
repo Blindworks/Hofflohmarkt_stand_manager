@@ -70,7 +70,7 @@ jQuery(document).ready(function ($) {
 
         html += '<div class="hm-popup-header">';
         if (isArea) {
-            html += '<span class="hm-popup-badge hm-popup-badge--area">' + ICONS.users + ' Flohmarkt-Hub</span>';
+            html += '<span class="hm-popup-badge hm-popup-badge--area">' + ICONS.users + ' Gemeinschaftsstandfläche</span>';
         } else if (stand.nest) {
             html += '<span class="hm-popup-badge hm-popup-badge--nest">' + ICONS.home + ' Nest</span>';
         } else if (stand.provides_space) {

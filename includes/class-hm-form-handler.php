@@ -223,7 +223,7 @@ class HM_Form_Handler
         ob_start();
         ?>
         <div class="hm-registration-form" id="hm-area-registration-form">
-            <h3>Stand in Flohmarkt-Hub anmelden</h3>
+            <h3>Stand auf Gemeinschaftsstandfläche anmelden</h3>
             <form method="post" action="">
                 <?php wp_nonce_field('hm_register_area_stand', 'hm_register_area_nonce'); ?>
                 <input type="hidden" name="hm_form_type" value="area_registration">
@@ -246,7 +246,7 @@ class HM_Form_Handler
                 </div>
 
                 <div class="hm-form-group">
-                    <label for="hm_special_area_id">Flohmarkt-Hub auswählen</label>
+                    <label for="hm_special_area_id">Gemeinschaftsstandfläche auswählen</label>
                     <select name="hm_special_area_id" id="hm_special_area_id" required>
                         <option value="">-- Bitte wählen --</option>
                         <?php foreach ($areas as $a):
@@ -283,13 +283,13 @@ class HM_Form_Handler
                 <?php if (isset($_GET['hm_error']) && $_GET['hm_error'] === 'area_full'): ?>
                     <div class="hm-error-message">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
-                        Dieser Flohmarkt-Hub ist leider bereits ausgebucht.
+                        Diese Gemeinschaftsstandfläche ist leider bereits ausgebucht.
                     </div>
                 <?php endif; ?>
                 <?php if (isset($_GET['hm_error']) && $_GET['hm_error'] === 'duplicate'): ?>
                     <div class="hm-error-message">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
-                        Diese Person ist für diesen Flohmarkt-Hub bereits angemeldet.
+                        Diese Person ist für diese Gemeinschaftsstandfläche bereits angemeldet.
                     </div>
                 <?php endif; ?>
                 <?php if (isset($_GET['hm_area_success'])): ?>

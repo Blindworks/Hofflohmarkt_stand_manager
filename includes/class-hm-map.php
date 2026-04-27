@@ -34,7 +34,7 @@ class HM_Map
         $html .= '<div class="hm-legend-title">Legende</div>';
         $html .= '<div class="hm-legend-item"><span class="hm-legend-marker hm-legend-marker--blue"></span><span>Stand</span></div>';
         $html .= '<div class="hm-legend-item"><span class="hm-legend-marker hm-legend-marker--yellow"></span><span>Hofflohmarkt Nest</span></div>';
-        $html .= '<div class="hm-legend-item"><span class="hm-legend-marker hm-legend-marker--green"></span><span>Flohmarkt-Hub</span></div>';
+        $html .= '<div class="hm-legend-item"><span class="hm-legend-marker hm-legend-marker--green"></span><span>Gemeinschaftsstandfläche</span></div>';
         $html .= '</div>';
         $html .= '</div>';
         return $html;
