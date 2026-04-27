@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
 // Define Constants
 define('HM_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('HM_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('HM_CONSENT_VERSION', '2026-04-27');
+define('HM_CONSENT_VERSION', '2026-04-27.1');
 
 // Include necessary files
 require_once HM_PLUGIN_PATH . 'includes/class-hm-db.php';

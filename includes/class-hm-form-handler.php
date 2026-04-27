@@ -140,7 +140,7 @@ class HM_Form_Handler
 
                 <?php echo $this->render_consent_field('stand'); ?>
 
-                <button type="submit" id="hm_submit_stand_btn" class="button" style="margin-top: 20px;">Stand Anmelden</button>
+                <button type="submit" id="hm_submit_stand_btn" class="button" style="margin-top: 20px;">Stand anmelden</button>
                 <?php if (isset($_GET['hm_error']) && $_GET['hm_error'] === 'duplicate'): ?>
                     <div class="hm-error-message">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
@@ -279,7 +279,6 @@ class HM_Form_Handler
         ob_start();
         ?>
         <div class="hm-registration-form" id="hm-area-registration-form">
-            <h3>Einen Stand anmelden</h3>
             <form method="post" action="">
                 <?php wp_nonce_field('hm_register_area_stand', 'hm_register_area_nonce'); ?>
                 <input type="hidden" name="hm_form_type" value="area_registration">
@@ -337,7 +336,7 @@ class HM_Form_Handler
 
                 <?php echo $this->render_consent_field('area'); ?>
 
-                <button type="submit" id="hm_submit_area_btn" class="button" style="margin-top: 20px;">Stand Anmelden</button>
+                <button type="submit" id="hm_submit_area_btn" class="button" style="margin-top: 20px;">Stand anmelden</button>
                 <?php if (isset($_GET['hm_error']) && $_GET['hm_error'] === 'consent'): $this->render_consent_error('#hm-area-registration-form'); endif; ?>
                 <?php if (isset($_GET['hm_error']) && $_GET['hm_error'] === 'area_full'): ?>
                     <div class="hm-error-message">
