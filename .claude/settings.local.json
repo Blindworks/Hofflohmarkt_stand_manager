@@ -3,7 +3,10 @@
     "allow": [
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(gh pr *)"
+      "Bash(gh pr *)",
+      "Bash(php -l includes/class-hm-form-handler.php)",
+      "Bash(php -l includes/class-hm-db.php)",
+      "Bash(php -l hofflohmarkt-stand-manager.php)"
     ]
   }
 }

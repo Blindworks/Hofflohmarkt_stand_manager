@@ -11,6 +11,56 @@ class HM_Form_Handler
         add_action('init', array($this, 'handle_form_submission'));
     }
 
+    private function render_consent_field($form_type = 'stand')
+    {
+        $privacy_url = function_exists('get_privacy_policy_url') ? get_privacy_policy_url() : '';
+
+        switch ($form_type) {
+            case 'space_offer':
+                $purpose = 'Ich willige ein, dass meine angegebenen Daten (Name, E-Mail-Adresse, Anschrift) zur Bearbeitung meiner Anmeldung und zur Anzeige meines Platzangebots auf der Hofflohmarkt-Karte verarbeitet werden.';
+                break;
+            case 'area':
+                $purpose = 'Ich willige ein, dass meine angegebenen Daten (Name, E-Mail-Adresse) zur Bearbeitung meiner Anmeldung, zur Anzeige meines Standes auf der Hofflohmarkt-Karte sowie zur Übermittlung an den Betreiber der ausgewählten Gemeinschaftsstandfläche zur Organisation der Veranstaltung verarbeitet werden.';
+                break;
+            case 'stand':
+            default:
+                $purpose = 'Ich willige ein, dass meine angegebenen Daten (Name, E-Mail-Adresse, Anschrift) zur Bearbeitung meiner Anmeldung und zur Anzeige meines Standes auf der Hofflohmarkt-Karte verarbeitet werden.';
+                break;
+        }
+
+        ob_start();
+        ?>
+        <div class="hm-form-group hm-consent-group"
+            style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee;">
+            <label style="font-weight: normal; display: flex; align-items: flex-start; gap: 8px;">
+                <input type="checkbox" name="hm_consent" value="1" required style="margin-top: 4px;">
+                <span>
+                    <?php echo esc_html($purpose); ?>
+                    Die Einwilligung kann jederzeit mit Wirkung für die Zukunft widerrufen werden.
+                    <?php if (!empty($privacy_url)): ?>
+                        Weitere Informationen in der
+                        <a href="<?php echo esc_url($privacy_url); ?>" target="_blank" rel="noopener noreferrer">Datenschutzerklärung</a>.
+                    <?php else: ?>
+                        Weitere Informationen in der Datenschutzerklärung.
+                    <?php endif; ?>
+                    <span style="color: #c00;">*</span>
+                </span>
+            </label>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    private function render_consent_error($anchor)
+    {
+        ?>
+        <div class="hm-error-message">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+            Bitte stimme der Datenverarbeitung zu, um die Anmeldung abzuschließen.
+        </div>
+        <?php
+    }
+
     public function render_registration_form()
     {
         global $wpdb;
@@ -88,6 +138,8 @@ class HM_Form_Handler
                     <?php endif; ?>
                 </div>
 
+                <?php echo $this->render_consent_field('stand'); ?>
+
                 <button type="submit" id="hm_submit_stand_btn" class="button" style="margin-top: 20px;">Stand Anmelden</button>
                 <?php if (isset($_GET['hm_error']) && $_GET['hm_error'] === 'duplicate'): ?>
                     <div class="hm-error-message">
@@ -95,6 +147,7 @@ class HM_Form_Handler
                         Diese Person ist an dieser Adresse bereits angemeldet.
                     </div>
                 <?php endif; ?>
+                <?php if (isset($_GET['hm_error']) && $_GET['hm_error'] === 'consent'): $this->render_consent_error('#hm-registration-form'); endif; ?>
                 <?php if (isset($_GET['hm_success'])): ?>
                     <div id="hm-success" class="hm-success-message">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
@@ -174,7 +227,10 @@ class HM_Form_Handler
                     <textarea name="hm_space_description" id="hm_space_description" rows="3" style="width: 100%;"></textarea>
                 </div>
 
+                <?php echo $this->render_consent_field('space_offer'); ?>
+
                 <button type="submit" name="hm_submit_space_offer" class="button" style="margin-top: 20px;">Platz anbieten</button>
+                <?php if (isset($_GET['hm_error']) && $_GET['hm_error'] === 'consent'): $this->render_consent_error('#hm-success'); endif; ?>
                 <?php if (isset($_GET['hm_space_success'])): ?>
                     <div id="hm-success" class="hm-success-message">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
@@ -223,7 +279,7 @@ class HM_Form_Handler
         ob_start();
         ?>
         <div class="hm-registration-form" id="hm-area-registration-form">
-            <h3>Stand auf Gemeinschaftsstandfläche anmelden</h3>
+            <h3>Einen Stand anmelden</h3>
             <form method="post" action="">
                 <?php wp_nonce_field('hm_register_area_stand', 'hm_register_area_nonce'); ?>
                 <input type="hidden" name="hm_form_type" value="area_registration">
@@ -279,7 +335,10 @@ class HM_Form_Handler
                     <?php endif; ?>
                 </div>
 
+                <?php echo $this->render_consent_field('area'); ?>
+
                 <button type="submit" id="hm_submit_area_btn" class="button" style="margin-top: 20px;">Stand Anmelden</button>
+                <?php if (isset($_GET['hm_error']) && $_GET['hm_error'] === 'consent'): $this->render_consent_error('#hm-area-registration-form'); endif; ?>
                 <?php if (isset($_GET['hm_error']) && $_GET['hm_error'] === 'area_full'): ?>
                     <div class="hm-error-message">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
@@ -316,6 +375,11 @@ class HM_Form_Handler
     {
         if (!isset($_POST['hm_register_area_nonce']) || !wp_verify_nonce($_POST['hm_register_area_nonce'], 'hm_register_area_stand')) {
             return;
+        }
+
+        if (empty($_POST['hm_consent'])) {
+            wp_redirect(add_query_arg('hm_error', 'consent') . '#hm-area-registration-form');
+            exit;
         }
 
         global $wpdb;
@@ -370,8 +434,11 @@ class HM_Form_Handler
                 'special_area_id' => $area_id,
                 'lat' => $area->lat,
                 'lng' => $area->lng,
+                'consent_given' => 1,
+                'consent_timestamp' => current_time('mysql'),
+                'consent_text_version' => HM_CONSENT_VERSION,
             ),
-            array('%s','%s','%s','%s','%s','%s','%s','%d','%d','%d','%d','%f','%f')
+            array('%s','%s','%s','%s','%s','%s','%s','%d','%d','%d','%d','%f','%f','%d','%s','%s')
         );
 
         if ($result) {
@@ -398,6 +465,11 @@ class HM_Form_Handler
     {
         if (!isset($_POST['hm_register_nonce']) || !wp_verify_nonce($_POST['hm_register_nonce'], 'hm_register_stand')) {
             return;
+        }
+
+        if (empty($_POST['hm_consent'])) {
+            wp_redirect(add_query_arg('hm_error', 'consent') . '#hm-registration-form');
+            exit;
         }
 
         global $wpdb;
@@ -444,9 +516,12 @@ class HM_Form_Handler
                 'hofflohmarkt_nest' => $nest,
                 'active' => 0, // Default inactive
                 'lat' => $lat,
-                'lng' => $lng
+                'lng' => $lng,
+                'consent_given' => 1,
+                'consent_timestamp' => current_time('mysql'),
+                'consent_text_version' => HM_CONSENT_VERSION
             ),
-            array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%f', '%f')
+            array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%f', '%f', '%d', '%s', '%s')
         );
 
         if ($result) {
@@ -476,6 +551,11 @@ class HM_Form_Handler
     {
         if (!isset($_POST['hm_offer_space_nonce']) || !wp_verify_nonce($_POST['hm_offer_space_nonce'], 'hm_offer_space')) {
             return;
+        }
+
+        if (empty($_POST['hm_consent'])) {
+            wp_redirect(add_query_arg('hm_error', 'consent') . '#hm-success');
+            exit;
         }
 
         global $wpdb;
@@ -510,9 +590,12 @@ class HM_Form_Handler
                 'space_description' => $space_description,
                 'active' => 0, // Default inactive
                 'lat' => $lat,
-                'lng' => $lng
+                'lng' => $lng,
+                'consent_given' => 1,
+                'consent_timestamp' => current_time('mysql'),
+                'consent_text_version' => HM_CONSENT_VERSION
             ),
-            array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%d', '%f', '%f')
+            array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%d', '%f', '%f', '%d', '%s', '%s')
         );
 
         if ($result) {

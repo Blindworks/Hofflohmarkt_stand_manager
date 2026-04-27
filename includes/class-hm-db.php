@@ -44,6 +44,9 @@ class HM_DB
             special_area_id mediumint(9) DEFAULT NULL,
             lat decimal(10, 8) DEFAULT NULL,
             lng decimal(11, 8) DEFAULT NULL,
+            consent_given tinyint(1) NOT NULL DEFAULT 0,
+            consent_timestamp datetime DEFAULT NULL,
+            consent_text_version varchar(20) DEFAULT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY  (id),
             KEY special_area_id (special_area_id)
@@ -82,6 +85,9 @@ class HM_DB
             active boolean DEFAULT 0,
             lat decimal(10, 8) DEFAULT NULL,
             lng decimal(11, 8) DEFAULT NULL,
+            consent_given tinyint(1) NOT NULL DEFAULT 0,
+            consent_timestamp datetime DEFAULT NULL,
+            consent_text_version varchar(20) DEFAULT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY  (id)
         ) $charset_collate;";
