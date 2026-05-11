@@ -18,6 +18,7 @@ if (!defined('ABSPATH')) {
 define('HM_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('HM_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('HM_CONSENT_VERSION', '2026-04-27.1');
+define('HM_DB_VERSION', '1.1.0');
 
 // Include necessary files
 require_once HM_PLUGIN_PATH . 'includes/class-hm-db.php';
@@ -29,6 +30,13 @@ require_once HM_PLUGIN_PATH . 'includes/class-hm-stand-counter.php';
 
 // Register activation hook
 register_activation_hook(__FILE__, array('HM_DB', 'install'));
+
+// Run schema upgrade automatically when plugin files are updated without reactivation
+add_action('plugins_loaded', function () {
+	if (get_option('hm_db_version') !== HM_DB_VERSION) {
+		HM_DB::install();
+	}
+});
 
 /**
  * Main Plugin Class

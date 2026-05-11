@@ -70,7 +70,7 @@ class HM_Form_Handler
         ob_start();
         ?>
         <div class="hm-registration-form" id="hm-registration-form">
-            <h3>Stand registrieren</h3>
+            <!--<h3>Stand registrieren</h3>-->
             <form method="post" action="">
                 <?php wp_nonce_field('hm_register_stand', 'hm_register_nonce'); ?>
                 <input type="hidden" name="hm_form_type" value="stand_registration">

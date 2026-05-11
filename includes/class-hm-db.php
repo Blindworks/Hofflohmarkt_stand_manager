@@ -139,5 +139,9 @@ class HM_DB
         dbDelta($sql_space_offers);
         dbDelta($sql_bewerbungen);
         dbDelta($sql_special_areas);
+
+        if (defined('HM_DB_VERSION')) {
+            update_option('hm_db_version', HM_DB_VERSION);
+        }
     }
 }
